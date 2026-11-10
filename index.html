@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>イディオム500</title>
+<style>
+:root{--bg:#f2f5f8;--card:#fff;--ink:#1c2733;--sub:#5d6b7a;--line:#d5dde5;--main:#2c4a8c;--main-ink:#fff;--ok:#1d7a4c;--okbg:#e4f4ec;--ng:#b3372f;--ngbg:#fbe9e7;--star:#b36b00;--starbg:#fff3dc}
+@media(prefers-color-scheme:dark){:root{--bg:#141a21;--card:#1d252e;--ink:#e8edf2;--sub:#9aa8b6;--line:#34414e;--main:#7da0f0;--main-ink:#10151b;--ok:#6fd6a0;--okbg:#17372a;--ng:#ff9a90;--ngbg:#40201e;--star:#f0b45a;--starbg:#3a2c12}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'Hiragino Kaku Gothic ProN','Yu Gothic',Meiryo,sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px 16px 48px}
+h1{font-size:1.5rem;margin:8px 0 4px}
+h2{font-size:1rem;margin:28px 0 10px;color:var(--sub);font-weight:600}
+.lead{color:var(--sub);margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--main);outline-offset:2px}
+.big{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 18px;border-radius:10px;border:1px solid var(--main);background:var(--main);color:var(--main-ink);font-weight:700;font-size:1.05rem}
+.big.alt{background:var(--card);color:var(--main)}
+.big:disabled{opacity:.45;cursor:not-allowed}
+.badge{font-weight:600;font-size:.9rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.range{padding:12px 6px;border-radius:8px;border:1px solid var(--line);background:var(--card)}
+.range:hover{border-color:var(--main)}
+.link{background:none;border:none;color:var(--sub);text-decoration:underline;padding:8px 0;margin-top:8px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.bar .t{color:var(--sub);font-size:.9rem;text-align:center;flex:1}
+.quit{padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);white-space:nowrap}
+.prog{height:4px;background:var(--line);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--main)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.no{color:var(--sub);font-size:.85rem;margin-bottom:6px}
+.stem{white-space:pre-wrap;font:1.1rem/1.75 Georgia,'Times New Roman','Hiragino Mincho ProN','Yu Mincho',serif;margin:0 0 6px}
+.stem u{text-underline-offset:3px;text-decoration-thickness:2px}
+.school{text-align:right;color:var(--sub);font-size:.85rem;margin:0 0 10px}
+.grp{margin:12px 0 4px;font-weight:700;color:var(--sub);font-size:.9rem}
+.opts{display:grid;gap:8px;margin-top:8px}
+.opt{display:flex;gap:10px;text-align:left;padding:12px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font:1rem/1.5 Georgia,'Times New Roman','Hiragino Mincho ProN',serif}
+.opt b{font-family:inherit;min-width:1.4em}
+.opt:not(:disabled):hover{border-color:var(--main)}
+.opt.pick{border-color:var(--main);box-shadow:inset 0 0 0 1px var(--main)}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.ng{background:var(--ngbg);border-color:var(--ng)}
+.opt:disabled{cursor:default}
+.fb{margin-top:16px;padding:14px;border-radius:10px;border:1px solid var(--line)}
+.fb.ok{background:var(--okbg);border-color:var(--ok)}
+.fb.ng{background:var(--ngbg);border-color:var(--ng)}
+.fb h3{margin:0 0 6px;font-size:1.05rem}
+.fb.ok h3{color:var(--ok)}.fb.ng h3{color:var(--ng)}
+.fb p{margin:4px 0;white-space:pre-wrap}
+.acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.acts button{flex:1;min-width:150px;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--card)}
+.acts .next{background:var(--main);border-color:var(--main);color:var(--main-ink);font-weight:700}
+.acts .star.on{background:var(--starbg);border-color:var(--star);color:var(--star);font-weight:700}
+.score{font-size:2rem;font-weight:700;margin:8px 0}
+.stack{display:grid;gap:10px;margin-top:16px}
+@media(prefers-reduced-motion:no-preference){.prog i{transition:width .2s}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script src="questions.js"></script>
+<script>
+const Q=window.QUESTIONS, KEY='idiom500.stock.v1', $=document.getElementById('app');
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;(\/?)u&gt;/g,'<$1u>');
+const byNo=n=>Q[n-1];
+let stock=loadStock(), S=null;
+function loadStock(){try{return new Set(JSON.parse(localStorage.getItem(KEY)||'[]'))}catch(e){return new Set()}}
+function saveStock(){try{localStorage.setItem(KEY,JSON.stringify([...stock].sort((a,b)=>a-b)))}catch(e){}}
+
+/* 問題文を「本文」「大学名」「選択肢」に分解 */
+function parse(item){
+  const lines=item.q.split('\n'), uni=/（([^（）]*(?:大|校|験|学))）\s*$/;
+  let k=lines.length-1, school='', m=lines[k].match(uni);
+  if(m){school=m[1];lines[k]=lines[k].replace(uni,'').trimEnd()}
+  const s=lines.findIndex(l=>/^(\([AB]\)\s*)?[①-⑳]/.test(l)), cl=lines.slice(s);
+  const split=t=>{const o=[],re=/([①-⑳])\s*([^①-⑳]*)/g;let x;while(x=re.exec(t))o.push([x[1],x[2].trim()]);return o};
+  let groups=null, choices=null;
+  if(/^\([AB]\)/.test(cl[0])){groups={};cl.forEach(l=>{const g=l.match(/^\(([AB])\)\s*(.*)$/);if(g)groups[g[1]]=split(g[2])})}
+  else{choices=split(cl.join(' '));if(/^\(A\)/.test(item.a))groups={A:choices,B:choices}}
+  return{stem:lines.slice(0,s).join('\n'),school,groups,choices};
+}
+function answerMarks(a){
+  if(/^\(A\)/.test(a)){const r={};for(const m of a.matchAll(/\(([AB])\)\s*([①-⑳])/g))r[m[1]]=m[2];return r}
+  return{_:a[0]};
+}
+
+/* 画面 */
+function home(){
+  S=null;
+  const ranges=[];for(let i=1;i<=Q.length;i+=20)ranges.push(i);
+  $.innerHTML=`<h1>イディオム500</h1><p class="lead">範囲を選んで演習。間違えた問題は自動でストックされます。</p>
+  <h2>復習</h2>
+  <button class="big" id="bStock" ${stock.size?'':'disabled'}><span>間違えた問題のみ</span><span class="badge">${stock.size}問</span></button>
+  ${stock.size?'<button class="link" id="bClear">ストックをすべて空にする</button>':''}
+  <h2>ランダム</h2>
+  <button class="big alt" id="bRand"><span>ランダム20問</span><span class="badge">全${Q.length}問から</span></button>
+  <h2>範囲別</h2>
+  <div class="grid">${ranges.map(i=>`<button class="range" data-s="${i}">${i}–${Math.min(i+19,Q.length)}</button>`).join('')}</div>`;
+  document.getElementById('bStock').onclick=()=>start('間違えた問題のみ',[...stock].sort((a,b)=>a-b));
+  document.getElementById('bRand').onclick=()=>{const ids=Q.map(q=>q.n);for(let i=ids.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[ids[i],ids[j]]=[ids[j],ids[i]]}start('ランダム20問',ids.slice(0,20))};
+  const c=document.getElementById('bClear');
+  if(c)c.onclick=()=>{if(confirm('ストックした問題をすべて削除します。よろしいですか？')){stock.clear();saveStock();home()}};
+  $.querySelectorAll('.range').forEach(b=>b.onclick=()=>{const s=+b.dataset.s,ids=[];for(let n=s;n<s+20&&n<=Q.length;n++)ids.push(n);start(`No.${s}–${ids[ids.length-1]}`,ids)});
+}
+function start(title,ids){S={title,ids,i:0,right:0,done:false,pick:{}};question()}
+
+function question(){
+  const item=byNo(S.ids[S.i]),p=parse(item);S.item=item;S.p=p;S.pick={};S.done=false;
+  const grpHtml=g=>`<div class="opts" data-g="${g}">${(p.groups?p.groups[g]:p.choices).map(([m,t])=>`<button class="opt" data-g="${g}" data-m="${m}"><b>${m}</b><span>${esc(t)}</span></button>`).join('')}</div>`;
+  const opts=p.groups?Object.keys(p.groups).map(g=>`<div class="grp">(${g})</div>${grpHtml(g)}`).join(''):grpHtml('_');
+  $.innerHTML=`<div class="bar"><button class="quit" id="bQuit">中断してトップへ</button><div class="t">${esc(S.title)}　${S.i+1} / ${S.ids.length}</div></div>
+  <div class="prog"><i style="width:${S.i/S.ids.length*100}%"></i></div>
+  <div class="card"><div class="no">No.${item.n}</div><p class="stem">${esc(p.stem)}</p>${p.school?`<p class="school">（${esc(p.school)}）</p>`:''}${opts}<div id="fb"></div></div>`;
+  document.getElementById('bQuit').onclick=home;
+  $.querySelectorAll('.opt').forEach(b=>b.onclick=()=>choose(b));
+}
+function choose(b){
+  if(S.done)return;
+  const g=b.dataset.g;S.pick[g]=b.dataset.m;
+  $.querySelectorAll(`.opt[data-g="${g}"]`).forEach(x=>x.classList.toggle('pick',x===b));
+  const need=S.p.groups?Object.keys(S.p.groups):['_'];
+  if(need.every(k=>S.pick[k]))grade();
+}
+function grade(){
+  S.done=true;
+  const ans=answerMarks(S.item.a),keys=Object.keys(ans),good=keys.every(k=>S.pick[k]===ans[k]);
+  $.querySelectorAll('.opt').forEach(b=>{b.disabled=true;b.classList.remove('pick');
+    if(ans[b.dataset.g]===b.dataset.m)b.classList.add('ok');
+    else if(S.pick[b.dataset.g]===b.dataset.m)b.classList.add('ng')});
+  if(good)S.right++;else{stock.add(S.item.n);saveStock()}
+  const last=S.i===S.ids.length-1, stockMode=S.title==='間違えた問題のみ';
+  document.getElementById('fb').innerHTML=`<div class="fb ${good?'ok':'ng'}"><h3>${good?'正解':'不正解'}</h3>
+  <p><b>解答</b>　${esc(S.item.a)}</p><p>${esc(S.item.e)}</p>${good?'':'<p>この問題をストックしました。</p>'}</div>
+  <div class="acts"><button class="star" id="bStar"></button><button class="next" id="bNext">${last?'結果を見る':'次の問題'}</button></div>`;
+  const star=document.getElementById('bStar'),n=S.item.n;
+  const paint=()=>{const on=stock.has(n);star.classList.toggle('on',on);
+    star.textContent=on?(good&&stockMode?'ストックから外す':'★ ストック済み（タップで外す）'):'☆ 自信がない：ストックに追加'};
+  star.onclick=()=>{stock.has(n)?stock.delete(n):stock.add(n);saveStock();paint()};paint();
+  document.getElementById('bNext').onclick=next;document.getElementById('bNext').focus();
+}
+function next(){if(S.i<S.ids.length-1){S.i++;question()}else result()}
+function result(){
+  const t=S.ids.length,r=S.right;
+  $.innerHTML=`<h1>結果</h1><p class="lead">${esc(S.title)}</p><div class="score">${t}問中 ${r}問 正解</div>
+  <p class="lead">ストック中の問題：${stock.size}問</p>
+  <div class="stack">${stock.size?'<button class="big" id="bS"><span>間違えた問題のみ</span><span class="badge">'+stock.size+'問</span></button>':''}<button class="big alt" id="bH">トップへ戻る</button></div>`;
+  const s=document.getElementById('bS');if(s)s.onclick=()=>start('間違えた問題のみ',[...stock].sort((a,b)=>a-b));
+  document.getElementById('bH').onclick=home;
+}
+document.addEventListener('keydown',e=>{
+  if(!S||e.metaKey||e.ctrlKey)return;
+  if(S.done){if(e.key==='Enter'){e.preventDefault();next()}return}
+  if(!S.p.groups&&/^[1-9]$/.test(e.key)){const o=$.querySelectorAll('.opt')[+e.key-1];if(o)choose(o)}
+});
+home();
+</script>
+</body>
+</html>
