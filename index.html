@@ -54,6 +54,9 @@ button:focus-visible{outline:3px solid var(--main);outline-offset:2px}
 .acts .star.on{background:var(--starbg);border-color:var(--star);color:var(--star);font-weight:700}
 .score{font-size:2rem;font-weight:700;margin:8px 0}
 .stack{display:grid;gap:10px;margin-top:16px}
+.rec{padding:12px 0;border-top:1px solid var(--line)}.rec:first-child{border-top:0;padding-top:0}.rec h3{margin:0 0 6px;font-size:1rem}
+.m{display:flex;align-items:center;gap:8px;font-size:.9rem;margin:4px 0}.m span{width:4em;color:var(--sub)}.m .tr{flex:1;height:10px;background:var(--line);border-radius:5px;overflow:hidden}.m .tr i{display:block;height:100%}.m b{width:3.4em;text-align:right}
+.sub{font-size:.8rem;color:var(--sub);margin:4px 0}
 @media(prefers-reduced-motion:no-preference){.prog i{transition:width .2s}}
 </style>
 </head>
@@ -61,11 +64,14 @@ button:focus-visible{outline:3px solid var(--main);outline-offset:2px}
 <main id="app"></main>
 <script src="questions.js"></script>
 <script>
-const Q=window.QUESTIONS, KEY='idiom500.stock.v1', $=document.getElementById('app');
+const Q=window.QUESTIONS, KEY='idiom500.stock.v1', RKEY='idiom500.rec.v1', $=document.getElementById('app');
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;(\/?)u&gt;/g,'<$1u>');
 const byNo=n=>Q[n-1];
-let stock=loadStock(), S=null;
+let stock=loadStock(), rec=loadRec(), S=null;
+stock.forEach(n=>{if(!rec[n])rec[n]='x'});   // 既存のストックは「不正解」として引き継ぐ
 function loadStock(){try{return new Set(JSON.parse(localStorage.getItem(KEY)||'[]'))}catch(e){return new Set()}}
+function loadRec(){try{return JSON.parse(localStorage.getItem(RKEY)||'{}')||{}}catch(e){return{}}}
+function saveRec(){try{localStorage.setItem(RKEY,JSON.stringify(rec))}catch(e){}}
 function saveStock(){try{localStorage.setItem(KEY,JSON.stringify([...stock].sort((a,b)=>a-b)))}catch(e){}}
 
 /* 問題文を「本文」「大学名」「選択肢」に分解 */
@@ -96,7 +102,10 @@ function home(){
   <h2>ランダム</h2>
   <button class="big alt" id="bRand"><span>ランダム20問</span><span class="badge">全${Q.length}問から</span></button>
   <h2>範囲別</h2>
-  <div class="grid">${ranges.map(i=>`<button class="range" data-s="${i}">${i}–${Math.min(i+19,Q.length)}</button>`).join('')}</div>`;
+  <div class="grid">${ranges.map(i=>`<button class="range" data-s="${i}">${i}–${Math.min(i+19,Q.length)}</button>`).join('')}</div>
+  <h2>記録</h2>
+  <button class="big alt" id="bRec"><span>あなたの記録</span><span class="badge">達成率・正答率</span></button>`;
+  document.getElementById('bRec').onclick=records;
   document.getElementById('bStock').onclick=()=>start('間違えた問題のみ',[...stock].sort((a,b)=>a-b));
   document.getElementById('bRand').onclick=()=>{const ids=Q.map(q=>q.n);for(let i=ids.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[ids[i],ids[j]]=[ids[j],ids[i]]}start('ランダム20問',ids.slice(0,20))};
   const c=document.getElementById('bClear');
@@ -129,6 +138,7 @@ function grade(){
     if(ans[b.dataset.g]===b.dataset.m)b.classList.add('ok');
     else if(S.pick[b.dataset.g]===b.dataset.m)b.classList.add('ng')});
   if(good)S.right++;else{stock.add(S.item.n);saveStock()}
+  rec[S.item.n]=good?'c':'x';saveRec();   // c=正答 / x=不正解(u=正解だが自信がない)
   const last=S.i===S.ids.length-1, stockMode=S.title==='間違えた問題のみ';
   document.getElementById('fb').innerHTML=`<div class="fb ${good?'ok':'ng'}"><h3>${good?'正解':'不正解'}</h3>
   <p><b>解答</b>　${esc(S.item.a)}</p><p>${esc(S.item.e)}</p>${good?'':'<p>この問題をストックしました。</p>'}</div>
@@ -136,8 +146,29 @@ function grade(){
   const star=document.getElementById('bStar'),n=S.item.n;
   const paint=()=>{const on=stock.has(n);star.classList.toggle('on',on);
     star.textContent=on?(good&&stockMode?'ストックから外す':'★ ストック済み（タップで外す）'):'☆ 自信がない：ストックに追加'};
-  star.onclick=()=>{stock.has(n)?stock.delete(n):stock.add(n);saveStock();paint()};paint();
+  star.onclick=()=>{stock.has(n)?stock.delete(n):stock.add(n);saveStock();if(good){rec[n]=stock.has(n)?'u':'c';saveRec()}paint()};paint();
   document.getElementById('bNext').onclick=next;document.getElementById('bNext').focus();
+}
+function records(){
+  S=null;
+  const units=[];for(let a=1;a<=Q.length;a+=100)units.push([a,Math.min(a+99,Q.length)]);
+  const stat=(a,b)=>{let tried=0,ok=0;for(let n=a;n<=b;n++){if(rec[n])tried++;if(rec[n]==='c')ok++}return{total:b-a+1,tried,ok}};
+  const pct=(a,b)=>b?Math.round(a/b*100):null;
+  const meter=(l,v,c)=>`<div class="m"><span>${l}</span><div class="tr"><i style="width:${v||0}%;background:${c}"></i></div><b>${v==null?'—':v+'%'}</b></div>`;
+  const blk=(name,x)=>`<div class="rec"><h3>${name}</h3>${meter('達成率',pct(x.ok,x.total),'var(--main)')}${meter('正答率',pct(x.ok,x.tried),'var(--ok)')}<div class="sub">正答 ${x.ok}問 / 全${x.total}問 ・ 演習済み ${x.tried}問</div></div>`;
+  const us=units.map(([a,b])=>({name:`No.${a}–${b}`,...stat(a,b)}));
+  const sum=us.reduce((p,x)=>({total:p.total+x.total,tried:p.tried+x.tried,ok:p.ok+x.ok}),{total:0,tried:0,ok:0});
+  $.innerHTML=`<div class="bar"><button class="quit" id="bBack">トップへ戻る</button><div class="t">あなたの記録</div></div>
+  <div class="card">${blk('全体',sum)}</div>
+  <h2>単元ごと(100問単位)</h2><div class="card">${us.map(x=>blk(x.name,x)).join('')}</div>
+  <h2>達成率・正答率とは</h2><div class="card">
+  <p class="sub"><b>達成率</b>＝単元の全問題のうち、正答した問題の割合</p>
+  <p class="sub"><b>正答率</b>＝演習した問題のうち、正答した問題の割合</p>
+  <p class="sub">各問題の「最新の解答」で数えます(間違えた問題を後で正解すれば正答になります)。正解でも「自信がない」としてストックした問題は、正答に数えません。ストック問題に正解すると正答扱いになります。</p></div>
+  <button class="link" id="bReset">記録をリセットする</button>`;
+  document.getElementById('bBack').onclick=home;
+  document.getElementById('bReset').onclick=()=>{if(confirm('達成率・正答率の記録をリセットします(ストックは残ります)。よろしいですか？')){rec={};saveRec();records()}};
+  scrollTo(0,0);
 }
 function next(){if(S.i<S.ids.length-1){S.i++;question()}else result()}
 function result(){
