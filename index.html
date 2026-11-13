@@ -4,6 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>イディオム500</title>
+  <style>
+    .back-portal-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #64748b;
+        background-color: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background-color 0.2s, color 0.2s;
+    }
+    .back-portal-link:hover {
+        background-color: #e2e8f0;
+        color: #1e293b;
+    }
+</style>
 <style>
 :root{--bg:#f2f5f8;--card:#fff;--ink:#1c2733;--sub:#5d6b7a;--line:#d5dde5;--main:#2c4a8c;--main-ink:#fff;--ok:#1d7a4c;--okbg:#e4f4ec;--ng:#b3372f;--ngbg:#fbe9e7;--star:#b36b00;--starbg:#fff3dc}
 @media(prefers-color-scheme:dark){:root{--bg:#141a21;--card:#1d252e;--ink:#e8edf2;--sub:#9aa8b6;--line:#34414e;--main:#7da0f0;--main-ink:#10151b;--ok:#6fd6a0;--okbg:#17372a;--ng:#ff9a90;--ngbg:#40201e;--star:#f0b45a;--starbg:#3a2c12}}
@@ -73,6 +93,9 @@ function loadStock(){try{return new Set(JSON.parse(localStorage.getItem(KEY)||'[
 function loadRec(){try{return JSON.parse(localStorage.getItem(RKEY)||'{}')||{}}catch(e){return{}}}
 function saveRec(){try{localStorage.setItem(RKEY,JSON.stringify(rec))}catch(e){}}
 function saveStock(){try{localStorage.setItem(KEY,JSON.stringify([...stock].sort((a,b)=>a-b)))}catch(e){}}
+  <a href="https://rakuchi-ai.github.io/ENGLISH-TOP/" class="back-portal-link">
+    &larr; ポータルに戻る
+</a>
 
 /* 問題文を「本文」「大学名」「選択肢」に分解 */
 function parse(item){
