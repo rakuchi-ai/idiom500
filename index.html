@@ -58,37 +58,14 @@ button:focus-visible{outline:3px solid var(--main);outline-offset:2px}
 .m{display:flex;align-items:center;gap:8px;font-size:.9rem;margin:4px 0}.m span{width:4em;color:var(--sub)}.m .tr{flex:1;height:10px;background:var(--line);border-radius:5px;overflow:hidden}.m .tr i{display:block;height:100%}.m b{width:3.4em;text-align:right}
 .sub{font-size:.8rem;color:var(--sub);margin:4px 0}
 @media(prefers-reduced-motion:no-preference){.prog i{transition:width .2s}}
-    .back-portal-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: #64748b;
-        background-color: #f1f5f9;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        text-decoration: none;
-        transition: background-color 0.2s, color 0.2s;
-    }
-    .back-portal-link:hover {
-        background-color: #e2e8f0;
-        color: #1e293b;
-    }
 </style>
 </head>
 <body>
-<div style="max-width:720px; margin:0 auto; padding:16px 16px 0;">
-    <a href="https://rakuchi-ai.github.io/ENGLISH-TOP/" class="back-portal-link">
-        &larr; ポータルに戻る
-    </a>
-</div>
 <main id="app"></main>
 <script src="questions.js"></script>
 <script>
 const Q=window.QUESTIONS, KEY='idiom500.stock.v1', RKEY='idiom500.rec.v1', $=document.getElementById('app');
-const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;(\/?)u&gt;?/g,'<$1u>');
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;(\/?)u&gt;/g,'<$1u>');
 const byNo=n=>Q[n-1];
 let stock=loadStock(), rec=loadRec(), S=null;
 stock.forEach(n=>{if(!rec[n])rec[n]='x'});   // 既存のストックは「不正解」として引き継ぐ
@@ -96,9 +73,6 @@ function loadStock(){try{return new Set(JSON.parse(localStorage.getItem(KEY)||'[
 function loadRec(){try{return JSON.parse(localStorage.getItem(RKEY)||'{}')||{}}catch(e){return{}}}
 function saveRec(){try{localStorage.setItem(RKEY,JSON.stringify(rec))}catch(e){}}
 function saveStock(){try{localStorage.setItem(KEY,JSON.stringify([...stock].sort((a,b)=>a-b)))}catch(e){}}
-</script>
-</body>
-</html>
 
 /* 問題文を「本文」「大学名」「選択肢」に分解 */
 function parse(item){
