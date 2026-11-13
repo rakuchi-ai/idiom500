@@ -4,11 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>イディオム500</title>
+
+<!-- Google FontsからUD系フォント（BIZ UDPGothic）を読み込み -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-:root{--bg:#f2f5f8;--card:#fff;--ink:#1c2733;--sub:#5d6b7a;--line:#d5dde5;--main:#2c4a8c;--main-ink:#fff;--ok:#1d7a4c;--okbg:#e4f4ec;--ng:#b3372f;--ngbg:#fbe9e7;--star:#b36b00;--starbg:#fff3dc}
+:root{
+    --bg:#f2f5f8;--card:#fff;--ink:#1c2733;--sub:#5d6b7a;--line:#d5dde5;--main:#2c4a8c;--main-ink:#fff;--ok:#1d7a4c;--okbg:#e4f4ec;--ng:#b3372f;--ngbg:#fbe9e7;--star:#b36b00;--starbg:#fff3dc;
+    --base-font: "UD Digi Kyokasho N-R", "UD Digital Kyokasho NK-R", "BIZ UDPGothic", "メイリオ", Meiryo, sans-serif;
+}
 @media(prefers-color-scheme:dark){:root{--bg:#141a21;--card:#1d252e;--ink:#e8edf2;--sub:#9aa8b6;--line:#34414e;--main:#7da0f0;--main-ink:#10151b;--ok:#6fd6a0;--okbg:#17372a;--ng:#ff9a90;--ngbg:#40201e;--star:#f0b45a;--starbg:#3a2c12}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'Hiragino Kaku Gothic ProN','Yu Gothic',Meiryo,sans-serif}
+
+/* ページ全体および文字を扱う要素にUDフォントを確実に適用 */
+body, button, input, select, textarea, h1, h2, h3, h4, h5, h6 {
+    font-family: var(--base-font) !important;
+}
+
+body{margin:0;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.6}
 main{max-width:720px;margin:0 auto;padding:16px 16px 48px}
 h1{font-size:1.5rem;margin:8px 0 4px}
 h2{font-size:1rem;margin:28px 0 10px;color:var(--sub);font-weight:600}
@@ -30,13 +45,13 @@ button:focus-visible{outline:3px solid var(--main);outline-offset:2px}
 .prog i{display:block;height:100%;background:var(--main)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
 .no{color:var(--sub);font-size:.85rem;margin-bottom:6px}
-.stem{white-space:pre-wrap;font:1.1rem/1.75 Georgia,'Times New Roman','Hiragino Mincho ProN','Yu Mincho',serif;margin:0 0 6px}
+.stem{white-space:pre-wrap;font-size:1.1rem;line-height:1.75;font-family:Georgia,'Times New Roman','Hiragino Mincho ProN','Yu Mincho',serif;margin:0 0 6px}
 .stem u{text-underline-offset:3px;text-decoration-thickness:2px}
 .school{text-align:right;color:var(--sub);font-size:.85rem;margin:0 0 10px}
 .grp{margin:12px 0 4px;font-weight:700;color:var(--sub);font-size:.9rem}
 .opts{display:grid;gap:8px;margin-top:8px}
-.opt{display:flex;gap:10px;text-align:left;padding:12px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font:1rem/1.5 Georgia,'Times New Roman','Hiragino Mincho ProN',serif}
-.opt b{font-family:inherit;min-width:1.4em}
+.opt{display:flex;gap:10px;text-align:left;padding:12px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:1rem;line-height:1.5;font-family:Georgia,'Times New Roman','Hiragino Mincho ProN',serif}
+.opt b{font-family:var(--base-font);min-width:1.4em}
 .opt:not(:disabled):hover{border-color:var(--main)}
 .opt.pick{border-color:var(--main);box-shadow:inset 0 0 0 1px var(--main)}
 .opt.ok{background:var(--okbg);border-color:var(--ok)}
@@ -141,7 +156,7 @@ function question(){
   const item=byNo(S.ids[S.i]),p=parse(item);S.item=item;S.p=p;S.pick={};S.done=false;
   const grpHtml=g=>`<div class="opts" data-g="${g}">${(p.groups?p.groups[g]:p.choices).map(([m,t])=>`<button class="opt" data-g="${g}" data-m="${m}"><b>${m}</b><span>${esc(t)}</span></button>`).join('')}</div>`;
   const opts=p.groups?Object.keys(p.groups).map(g=>`<div class="grp">(${g})</div>${grpHtml(g)}`).join(''):grpHtml('_');
-  $.innerHTML=`<div class="bar"><button class="quit" id="bQuit">中断してトップへ</button><div class="t">${esc(S.title)}　${S.i+1} / ${S.ids.length}</div></div>
+  $.innerHTML=`<div class="bar"><button class="quit" id="bQuit">中断してトップへ</button><div class="t">${esc(S.title)} ${S.i+1} / ${S.ids.length}</div></div>
   <div class="prog"><i style="width:${S.i/S.ids.length*100}%"></i></div>
   <div class="card"><div class="no">No.${item.n}</div><p class="stem">${esc(p.stem)}</p>${p.school?`<p class="school">（${esc(p.school)}）</p>`:''}${opts}<div id="fb"></div></div>`;
   document.getElementById('bQuit').onclick=home;
@@ -164,7 +179,7 @@ function grade(){
   rec[S.item.n]=good?'c':'x';saveRec();   // c=正答 / x=不正解(u=正解だが自信がない)
   const last=S.i===S.ids.length-1, stockMode=S.title==='間違えた問題のみ';
   document.getElementById('fb').innerHTML=`<div class="fb ${good?'ok':'ng'}"><h3>${good?'正解':'不正解'}</h3>
-  <p><b>解答</b>　${esc(S.item.a)}</p><p>${esc(S.item.e)}</p>${good?'':'<p>この問題をストックしました。</p>'}</div>
+  <p><b>解答</b> ${esc(S.item.a)}</p><p>${esc(S.item.e)}</p>${good?'':'<p>この問題をストックしました。</p>'}</div>
   <div class="acts"><button class="star" id="bStar"></button><button class="next" id="bNext">${last?'結果を見る':'次の問題'}</button></div>`;
   const star=document.getElementById('bStar'),n=S.item.n;
   const paint=()=>{const on=stock.has(n);star.classList.toggle('on',on);
